@@ -5,22 +5,35 @@ function ModernDataTable(tableSelector)
     this.tableSelectorName = tableSelector;
     this.tableSelector = $(tableSelector);
     this.method = 'POST';
+
     this.webServiceURL = null;
     this.dataToSender = null;
 
+    //PUBLIC CONFIGURATIONS
     this.defaultOrderCol = 0;
     this.showInfo = false;
     this.showPaginate = true;
     this.serverSide = true;
     this.showSearchBox = true;
+    this.isColsEditable = true;
+    this.saveCellEdits = true;
+    this.getTitlesOfColumnsFromJSON = false;
+    this.showCheckBoxToSelectRow = true;
 
     this.itemPerPage = 10;
     this.data = {"recordsTotal": "0", "recordsFiltered": "0", "data": []};
     this.tableStruture = '';
-    this.columnsToDisplay = null;
-    this.getTitlesOfColumnsFromJSON = false;
-    this.showCheckBoxToSelectRow = true;
-    this.isColsEditable = true;
+    //colunas dos datos a serem exibidas pelo dataTable
+    this.columnsToDisplay = [{
+        "class": "inputIdEmpenhoParcela",
+        "value": "empenho",
+        "key": "idEmpenho"
+    }, {"class": "inputNumeroParcela", "value": "", "key": "numeroParcela"}, {
+        "class": "inputValorParcela",
+        "value": "R$ 0.00,00",
+        "key": "valor"
+    }];
+    //parametros enviados ao webservice pelo dataTable
     this.parametersToSender = {"draw": "1", "start": "0", "length": "10", "search[value]": ""};
 
     //EVENTS
@@ -48,7 +61,9 @@ ModernDataTable.prototype.showSelectBox = function (showSelectBox) {
     this.showCheckBoxToSelectRow = showSelectBox;
 };
 ModernDataTable.prototype.createTableHead = function (rows) {
-    this.tableStruture += '<thead>' + rows + '</thead>';
+    var self = this;
+    self.tableSelector.find('thead').remove();
+    self.tableSelector.append('<thead></thead>');
 };
 ModernDataTable.prototype.createTableBody = function () {
     var self = this;
@@ -68,19 +83,23 @@ ModernDataTable.prototype.createRow = function (cols, index, cssClass) {
     }
     return '<tr ' + css + ' ' + idx + ' >' + cols + '</tr>';
 };
-ModernDataTable.prototype.createCol = function (colContent, cssClass) {
+ModernDataTable.prototype.createCol = function (colContent, columnIdentity, cssClass) {
     var css = '';
+    var editable = '';
+    var columnId = '';
     if (cssClass)
     {
         css = 'class="' + cssClass + '"';
     }
-    var editable = '';
     if (this.isColsEditable)
     {
         editable = 'contenteditable';
-
     }
-    return '<td ' + css + ' ' + editable + ' >' + colContent + '</td>'
+    if (columnIdentity)
+    {
+        columnId = 'data-identity="' + columnIdentity + '"';
+    }
+    return '<td ' + css + ' ' + editable + ' ' + columnId + '>' + colContent + '</td>'
 };
 ModernDataTable.prototype.createColSelect = function () {
     var self = this;
@@ -89,11 +108,12 @@ ModernDataTable.prototype.createColSelect = function () {
     self.rowCount++;
     return '<td>' + colContent + '</td>'
 };
-ModernDataTable.prototype.createTableStruture = function () {
+ModernDataTable.prototype.draw = function () {
     var self = this;
     var data = self.data['data'];
     var rows = '';
-    for (var i = 0; i < data; i++)
+    self.tableStruture = '';
+    for (var i = 0; i < data.length; i++)
     {
         var row = data[i];
         var cols = '';
@@ -101,37 +121,29 @@ ModernDataTable.prototype.createTableStruture = function () {
         {
             cols += self.createColSelect();
         }
-        var keyNames = self.columnsToDisplay ? self.columnsToDisplay : Object.keys(row);
-        for (var key in keyNames)
+        var definedColNames = self.getKeysFromJSON(self.columnsToDisplay);
+        var autoColNames = Object.keys(row);
+        var colsNames = definedColNames;
+
+        for (var j = 0; j < colsNames.length; j++)
         {
-            cols += self.createCol(row[key]);
+            var tdClassName = self.columnsToDisplay[j]['class'];
+            var tdContent = row[colsNames[j]];
+            var columnIdentity = colsNames[j];
+            cols += self.createCol(tdContent, columnIdentity, tdClassName);
         }
-        rows += self.createRow(cols);
+        rows += self.createRow(cols, i);
     }
     self.tableStruture += rows;
-    self.draw();
-};
-ModernDataTable.prototype.draw = function () {
-    var self = this;
     self.tableSelector.find('tbody').html(self.tableStruture);
+
 };
 ModernDataTable.prototype.appendRowFromJSON = function (rowJSONData) {
     var self = this;
     self.data["recordsTotal"]++;
     self.data["recordsFiltered"]++;
     self.data["data"].push(self.getKeyValueFromJSON(rowJSONData));
-    var index = self.data["data"].length-1;
-
-    var cols = '';
-    if (self.showCheckBoxToSelectRow)
-    {
-        cols += self.createColSelect();
-    }
-    for (var i = 0; i < rowJSONData.length; i++)
-    {
-        cols += self.createCol(rowJSONData[i]['value'], rowJSONData[i]['class']);
-    }
-    self.tableStruture += self.createRow(cols, index);
+    self.columnsToDisplay = extend(self.columnsToDisplay, rowJSONData);
     self.draw();
 };
 ModernDataTable.prototype.setDisplayCols = function (columnsToDisplay) {
@@ -161,7 +173,7 @@ ModernDataTable.prototype.getDataFromURL = function () {
     self.restClient.setSuccessCallbackFunction(function (data) {
         self.customLoading.hide();
         self.data = data;
-        self.createTableStruture();
+        self.draw();
     });
     self.restClient.setErrorCallbackFunction(function (jqXHR, textStatus, errorThrown) {
         self.customLoading.hide();
@@ -185,16 +197,42 @@ ModernDataTable.prototype.events = function () {
     self.tableSelector.on('click', 'tbody tr', function () {
         if (typeof self.onClickFunction == "function")
         {
-            var data = self.data["data"][$(this).attr('data-index')];
+            var index = $(this).attr('data-index');
+            var data = self.data["data"][index];
             self.onClickFunction(data);
         }
     });
+
+    self.tableSelector.on('input', 'tbody tr td', function () {
+        if (self.saveCellEdits)
+        {
+            var td = $(this);
+            var index = td.closest('tr').attr('data-index');
+            var celData = td.text();
+            var columnIdentity = td.attr('data-identity');
+            self.data["data"][index][columnIdentity] = celData;
+        }
+    });
 };
+//PUBLIC obtem os dados em formato JSON
+ModernDataTable.prototype.getDataAsJSON = function () {
+    var self = this;
+    return self.data['data'];
+};
+//INTERNAL PRIVATE METHODS HELPERS
 ModernDataTable.prototype.getKeyValueFromJSON = function (jsonCols) {
     var result = {};
     for (var i = 0; i < jsonCols.length; i++)
     {
         result[jsonCols[i]['key']] = jsonCols[i]['value'];
+    }
+    return result;
+};
+ModernDataTable.prototype.getKeysFromJSON = function (jsonCols) {
+    var result = [];
+    for (var i = 0; i < jsonCols.length; i++)
+    {
+        result[i] = jsonCols[i]['key'];
     }
     return result;
 };
