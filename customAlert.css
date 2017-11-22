@@ -1,0 +1,135 @@
+* {
+    font-family: "Roboto", sans-serif;
+}
+/**** MODAL *****/
+/* Modal background */
+.customModal {
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    margin: 0;
+    overflow: visible;
+    position: fixed;
+    overflow-y: auto;
+    display: none;
+    z-index: 100;
+    left: 0;
+    top: 0;
+    background-color: rgba(0, 0, 0, 0.34);
+}
+
+/* Modal Content/Box */
+.customModalContent {
+    display: none;
+    box-shadow: 1px 2px 1px #666666;
+    margin: 3% auto; /* 15% from the top and centered */
+    padding: 0;
+    border: 0 solid rgba(136, 136, 136, 0);
+    width: 40%; /* Could be more or less, depending on screen size */
+}
+
+@media (max-width:768px){
+    .customModalSmall, .customModalContent{
+        width: 100%;
+        margin: 0% auto; /* 15% from the top and centered */
+        height: 100%;
+    }
+}
+
+.customModalHeader {
+    text-align: center;
+    background: #aa00ff;
+    border-bottom: solid 3px #6a1b9a;
+}
+
+.customModalHeader h6 {
+    padding: 15px 15px 5px 20px;
+    color: #ffffff;
+    font-size: 1rem;
+    font-weight: 400;
+    text-align: left;
+    margin: 0.5rem 0 0.4rem 0;
+}
+
+.customModalIcon{
+    margin-right: 10px;
+    top: 1px;
+    position: relative;
+}
+
+/* modal body*/
+.customModalSection {
+    background: #ffffff;
+    padding: 10px;
+}
+
+/* The Close Button */
+.customModalCloseBtn {
+    display: block;
+    float: right;
+    color: #fff;
+    margin: 0;
+    padding: 0 2px 0 0;
+    top: 11px;
+    left: -15px;
+    position: relative;
+    width: 22px;
+    height: 22px;
+    border-radius: 20px;
+    background:
+            url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjwhLS0gR2VuZXJhdG9yOiBBZG9iZSBJbGx1c3RyYXRvciAxNi4wLjAsIFNWRyBFeHBvcnQgUGx1Zy1JbiAuIFNWRyBWZXJzaW9uOiA2LjAwIEJ1aWxkIDApICAtLT4NCjwhRE9DVFlQRSBzdmcgUFVCTElDICItLy9XM0MvL0RURCBTVkcgMS4xLy9FTiIgImh0dHA6Ly93d3cudzMub3JnL0dyYXBoaWNzL1NWRy8xLjEvRFREL3N2ZzExLmR0ZCI+DQo8c3ZnIHZlcnNpb249IjEuMSIgaWQ9IkxheWVyXzEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4Ig0KCSB3aWR0aD0iMTE5MC41NDlweCIgaGVpZ2h0PSIxMTg4LjcycHgiIHZpZXdCb3g9IjAgMCAxMTkwLjU0OSAxMTg4LjcyIiBlbmFibGUtYmFja2dyb3VuZD0ibmV3IDAgMCAxMTkwLjU0OSAxMTg4LjcyIg0KCSB4bWw6c3BhY2U9InByZXNlcnZlIj4NCjxnPg0KCTxwYXRoIGZpbGw9IiNGRkZGRkYiIGQ9Ik01OTUuMjc1LDE2OC44NTFjLTIzNi4wMTIsMC00MjcuMzY5LDE5MS4zNTctNDI3LjM2OSw0MjcuMzY5YzAsMjM2LjAxMywxOTEuMzU3LDQyNy4zNyw0MjcuMzY5LDQyNy4zNw0KCQljMjM2LjAxMywwLDQyNy4zNjktMTkxLjM1Nyw0MjcuMzY5LTQyNy4zN0MxMDIyLjY0NCwzNjAuMjA4LDgzMS4yODcsMTY4Ljg1MSw1OTUuMjc1LDE2OC44NTF6IE03NjkuOTczLDcwNi40NjMNCgkJYzE3Ljc5MywxNy43OTQsMTcuNzkzLDQ2LjY2MiwwLDY0LjQ1NWMtOC44OTYsOC44OTctMjAuNTg0LDEzLjM0NC0zMi4yNzEsMTMuMzQ0Yy0xMS42ODgsMC0yMy4zNzUtNC40NDctMzIuMjcxLTEzLjM0NA0KCQlMNTk1LjI3NSw2NjAuNjc1TDQ4NS4wMzEsNzcwLjkxOGMtOC44OTYsOC44OTctMjAuNTgzLDEzLjM0NC0zMi4yNzEsMTMuMzQ0Yy0xMS42ODcsMC0yMy4zNzUtNC40NDctMzIuMjcxLTEzLjM0NA0KCQljLTE3Ljc5Mi0xNy43OTItMTcuNzkyLTQ2LjY2MSwwLTY0LjQ1NUw1MzAuODIxLDU5Ni4yMkw0MjAuNTc3LDQ4NS45NzZjLTE3Ljc5Mi0xNy43OTItMTcuNzkyLTQ2LjY2MiwwLTY0LjQ1NA0KCQlzNDYuNjYyLTE3Ljc5Miw2NC40NTQsMGwxMTAuMjQ0LDExMC4yNDRsMTEwLjI0NC0xMTAuMjQ0YzE3Ljc5Mi0xNy43OTIsNDYuNjYxLTE3Ljc5Miw2NC40NTQsMHMxNy43OTMsNDYuNjYyLDAsNjQuNDU0DQoJCUw2NTkuNzI5LDU5Ni4yMkw3NjkuOTczLDcwNi40NjN6Ii8+DQo8L2c+DQo8L3N2Zz4NCg==')
+            no-repeat
+            rgba(255,255,255,0);
+            left center;
+    background-size: 22px 22px;
+}
+
+
+.customModalCloseBtn:hover,
+.customModalCloseBtn:focus {
+    border: solid #fff 2px;
+    text-decoration: none;
+    cursor: pointer;
+    padding: 0 0 0 0;
+    top: 9px;
+}
+
+.modalContainer{
+    padding: 10px;
+    color: rgba(0, 0, 0, 0.75);
+}
+
+.customModalFooter {
+    padding: 4px 6px;
+    height: 30px;
+    text-align: right;
+}
+
+.btn {
+    background-color: #ffffff;
+    cursor: pointer;
+    color: #333333;
+    font-size: 0.9em;
+    text-transform: uppercase;
+    text-decoration: none;
+    padding: 8px 20px;
+    margin-left: 5px;
+    border-radius: 3px;
+}
+
+.btn:hover {
+    background-color: #ededed;
+    box-shadow: 1px 2px 1px #666666;
+}
+
+.btnCustom{
+    color: #ffffff;
+    background-color: #aa00ff;
+    box-shadow: 1px 2px 1px #666666;
+}
+
+.btnCustom:hover{
+    background-color: #6a1b9a;
+    box-shadow: 1px 2px 1px #333333;
+}
+/* Fim Altera Botão Materialize */

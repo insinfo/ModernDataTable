@@ -1,0 +1,94 @@
+/**** MODAL *****/
+/* Modal background */
+.customModal {
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    margin: 0;
+    overflow: visible;
+    position: fixed;
+    overflow-y: auto;
+    display: none;
+    z-index: 100;
+    left: 0;
+    top: 0;
+    background-color: rgba(0, 0, 0, 0.34);
+}
+
+/* Modal Content/Box */
+.customModalContent {
+    display: none;
+    background-color: rgb(255, 255, 255);
+    margin: 3% auto; /* 15% from the top and centered */
+    padding: 0;
+    border: 0 solid rgba(136, 136, 136, 0);
+    width: 90%; /* Could be more or less, depending on screen size */
+}
+
+.customModalSmall{
+    width: 60%;
+}
+
+@media (max-width:768px){
+    .customModalSmall, .customModalContent{
+        width: 100%;
+        margin: 0% auto; /* 15% from the top and centered */
+        height: 100%;
+    }
+}
+
+.customModalHeader {
+    text-align: center;
+    background: #6a1b9a;
+    border-bottom: solid 3px #aa00ff;
+}
+
+.customModalHeader h6 {
+
+    padding-top: 20px;
+    padding-bottom: 20px;
+    color: #ffffff;
+    font-size: 18px;
+    margin: 0;
+
+}
+
+/* modal body*/
+.customModalSection {
+    width: 100%;
+    background: #ffffff;
+    padding: 10px;
+}
+
+/* The Close Button */
+.customModalCloseBtn {
+    float: right;
+    color: #fff;
+    font-size: 18px;
+    font-weight: lighter;
+    margin: 0;
+    padding: 0;
+    top: 15px;
+    left: -15px;
+    position: relative;
+    border-radius: 20px;
+    width: 28px;
+    height: 28px;
+}
+
+.customModalCloseBtn:hover,
+.customModalCloseBtn:focus {
+    border: solid #fff 2px;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+/* Altera Botão Materialize */
+.btn-floating {
+    background-color: #aa00ff;
+}
+
+.btn-floating:hover {
+    background-color: #6a1b9a;
+}
+/* Fim Altera Botão Materialize */
