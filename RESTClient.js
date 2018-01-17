@@ -2,9 +2,14 @@
  * Created by Isaque on 24/07/2017.
  */
 
+/**
+ * Created by Isaque Neves Sant Ana.
+ * Version: 1.0.0
+ * Date: 17/01/2018
+ * Time: 11:46
+ */
 function RESTClient()
 {
-    this.appkey = null;
     this.method = 'POST';
     this.webserviceURL = null;
     this.successCallbackFunction = null;
@@ -12,10 +17,10 @@ function RESTClient()
     this.dataTypeFormat = 'json';
     this.dataToSender = null;
     this.senderDataFormat = 'application/json; charset=utf-8';
+    this.header = null;
 }
-
-RESTClient.prototype.setAppkey = function (appkey) {
-    this.appkey = appkey;
+RESTClient.prototype.setHeader = function (header) {
+    this.header = header;
 };
 RESTClient.prototype.setMethod = function (method) {
     this.method = method;
@@ -66,21 +71,28 @@ RESTClient.prototype.setDataToSender = function (dataToSender) {
     this.dataToSender = dataToSender;
 };
 RESTClient.prototype.exec = function () {
-
+    var self = this;
     var sendData;
-    if (this.dataToSender != null)
+    if (self.dataToSender != null)
     {
         sendData = JSON.stringify(this.dataToSender);
     }
+    //get access_token
+    var token = sessionStorage.getItem('YWNjZXNzX3Rva2Vu') ? sessionStorage.getItem('YWNjZXNzX3Rva2Vu'): "";
+    var cabecario = { 'Authorization': 'Bearer ' + token };//headers: cabecario,
+    if (self.header)
+    {
+        cabecario = self.header
+    }
     $.ajax({
-        type: this.method,
-        url: this.webserviceURL,
-        dataType: this.dataTypeFormat,// data type of response
+        type: self.method,
+        url: self.webserviceURL,
+        headers: cabecario ,
+        dataType: self.dataTypeFormat,// data type of response
         data: sendData,
-        contentType: this.senderDataFormat,
-        traditional: true,
-        success: this.successCallbackFunction,
-        error: this.errorCallbackFunction
+        contentType: self.senderDataFormat,
+        //traditional: self,
+        success: self.successCallbackFunction,
+        error: self.errorCallbackFunction
     });
-
 };
