@@ -1,3 +1,10 @@
+/**
+ * Created by Isaque Neves Sant Ana.
+ * Version: 1.0.0
+ * Date: 17/01/2018
+ * Time: 11:46
+ */
+
 /******* FUNÇÕES UTILITARIOS ********/
 //evento Impede digitação de letras no input com evento
 function preventsLetter(dom)
@@ -523,30 +530,37 @@ function dataTableSelectAll(jqueryTableObject, dataTable, array)
         if (this.checked)
         {
             jqueryTableObject.find('tbody tr input[type="checkbox"]').each(function (index) {
-                $(this).prop('checked', true);
-                var rowId = dataTable.row($(this).closest('tr')).data()['id'];
+                var checkbox = $(this);
+                checkbox.prop('checked', true);
+                var tr = checkbox.closest('tr');
+                var rowId = dataTable.row(tr).data()['id'];
                 array.push(rowId);
             });
         }
         if (!this.checked)
         {
             jqueryTableObject.find('tbody tr input[type="checkbox"]').each(function (i) {
-                $(this).prop('checked', false);
-                var rowId = dataTable.row($(this).closest('tr')).data()['id'];
+                var checkbox = $(this);
+                checkbox.prop('checked', false);
+                var rowId = dataTable.row(checkbox.closest('tr')).data()['id'];
                 var index = $.inArray(rowId, array);
                 array.splice(index, 1);
+                array = [];
             });
+
         }
     });
 }
-
 //função que adiciona ou remove um id em um array quando check um checkbox de uma row de um dataTable
 //parametros: jquery instance de table, dataTable instance, array para armazenar os ids
 function dataTableSelect(jqueryTableObject, dataTable, array)
 {
     jqueryTableObject.off('click', 'tbody tr input[type="checkbox"]');
-    jqueryTableObject.on('click', 'tbody tr input[type="checkbox"]', function (e) {
-        var rowId = dataTable.row($(this).closest('tr')).data()['id'];
+    jqueryTableObject.on('click', 'tbody tr input[type="checkbox"]', function (e)
+    {
+        var checkbox = $(this);
+        var tr = checkbox.closest('tr');
+        var rowId = dataTable.row(tr).data()['id'];
 
         // Determine se o ID da linha está na lista de IDs de linhas selecionadas
         var index = $.inArray(rowId, array);
@@ -682,6 +696,7 @@ function removeSpecialChars(str)
         .replace(/^(\s*)([\W\w]*)(\b\s*$)/g, '$2');*/
     return str.replace(/[^a-zA-Z]/g, "");
 }
+
 //IMPLEMENTAÇÃO DE UMA ESCUTA DE EVENTO PARA OUVIR MODIFICAÇÕES DO DOM
 //COMPATIVEL COM IE 5.5+, FF 2+, Chrome, Safari 3+ and Opera 9.6+
 /*
@@ -826,3 +841,181 @@ var onDOMChangeEvent = (function(){
 })();
 
 */
+
+//--------------Formatar td editavel do tipo MOEDA-------------//
+function currencyFormatEditableElement(jqueryElement, milSep, decSep, e)
+{
+    jqueryElement = $(jqueryElement);
+    var sep = 0;
+    var key = '';
+    var i = 0;
+    var j = 0;
+    var stringLength = 0;
+    var len2 = 0;
+    var strCheck = '0123456789';
+    var aux = '';
+    var aux2 = '';
+    var whichCode = (window.Event) ? e.which : e.keyCode;
+
+    //window.alert(whichCode);
+    if ((whichCode == 8) || (whichCode == 13) || (whichCode == 0))
+    {
+        return true;  // Enter
+    }
+    key = String.fromCharCode(whichCode);  // Get key value from key code
+    if (strCheck.indexOf(key) == -1)
+    {
+        return false;  // Not a valid key
+    }
+
+    stringLength = jqueryElement.text().length;
+    var elementText = jqueryElement.text();
+    for (i = 0; i < stringLength; i++)
+    {
+        if ((elementText.charAt(i) != '0') && (elementText.charAt(i) != decSep))
+        {
+            break;
+        }
+    }
+
+    aux = '';
+    for (; i < stringLength; i++)
+    {
+        if (strCheck.indexOf(elementText.charAt(i)) != -1)
+        {
+            aux += elementText.charAt(i);
+        }
+    }
+    aux += key;
+
+    stringLength = aux.length;
+    if (stringLength == 0)
+    {
+        jqueryElement.text('')
+    }
+    else if (stringLength == 1)
+    {
+        jqueryElement.text('0' + decSep + '0' + aux);
+    }
+    else if (stringLength == 2)
+    {
+        jqueryElement.text('0' + decSep + aux);
+    }
+    else if (stringLength > 2)
+    {
+        aux2 = '';
+
+        for (j = 0, i = stringLength - 3; i >= 0; i--)
+        {
+            if (j == 3)
+            {
+                aux2 += milSep;
+                j = 0;
+            }
+            aux2 += aux.charAt(i);
+            j++;
+        }
+        jqueryElement.text('');
+        len2 = aux2.length;
+        for (i = len2 - 1; i >= 0; i--)
+        {
+            var val = jqueryElement.text();
+            val += aux2.charAt(i);
+            jqueryElement.text(val);
+        }
+        val = jqueryElement.text();
+        val += decSep + aux.substr(stringLength - 2, stringLength);
+        jqueryElement.text(val);
+    }
+    return false;
+}
+
+//verifica se um array contem um determinado numero
+function arrayContainsThisNumber(arrayOfIntegers, number)
+{
+    for (var i = 0; i <= arrayOfIntegers.length; i++)
+    {
+        if (number === arrayOfIntegers[i])
+        {
+            return i;
+        }
+    }
+    return -1;
+}
+
+//checa se um objeto esta vazio {} = true
+function isEmptyObject(obj) {
+    for(var prop in obj) {
+        if(obj.hasOwnProperty(prop))
+            return false;
+    }
+    //return JSON.stringify(obj) === JSON.stringify({});
+    return true;
+}
+//polyfill para redirecionamento de URL
+// Internet Explorer 8 or lower
+function redirect(url) {
+    var ua = navigator.userAgent.toLowerCase(), isIE = ua.indexOf('msie') !== -1,
+        version = parseInt(ua.substr(4, 2), 10);
+
+    // Internet Explorer 8 and lower
+    if (isIE && version < 9) {
+        var link = document.createElement('a');
+        link.href = url;
+        document.body.appendChild(link);
+        link.click();
+    }
+
+    // All other browsers can use the standard window.location.href (they don't lose HTTP_REFERER like Internet Explorer 8 & lower does)
+    else {
+        window.location.href = url;
+    }
+}
+
+// Função para retornar iniciais de um nome passado
+function retornarIniciais(pNome) {
+    var iniciais;
+    var nomes = pNome.split(' ');
+    if (nomes.length>1) iniciais = nomes[0].charAt(0).toUpperCase() + nomes[nomes.length-1].charAt(0).toUpperCase();
+    else iniciais = nomes[0].substr(0,2).toUpperCase();
+    return iniciais;
+}
+
+// gera um hash de uma string // java String#hashCode
+function hashCode(str) {
+    var hash = 0;
+    for (var i = 0; i < str.length; i++) {
+        hash = str.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    return hash;
+}
+//convert um int para color hex
+function intToRGB(i){
+    var c = (i & 0x00FFFFFF)
+        .toString(16)
+        .toUpperCase();
+
+    return '#'+"00000".substring(0, 6 - c.length) + c;
+}
+function stringToColour(stringIn)
+{
+    return intToRGB(hashCode(stringIn));
+}
+//converte "R$ 50,00" tipo moeda brasileiro para float
+function brCurrencyToFloat(brasilCorrency)
+{
+    var data = brasilCorrency != null ? brasilCorrency : '0';
+    data = data.replace(',',".");
+    return parseFloat(data.replace(/[R$]+/g,""));
+}
+function findValueInArray(key,value, array)
+{
+    for(var i=0; i < array.length;i++)
+    {
+        if(array[i][key] === value)
+        {
+            return array[i];
+        }
+    }
+    return null;
+}
