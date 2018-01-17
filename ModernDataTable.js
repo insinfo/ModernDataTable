@@ -1,18 +1,16 @@
 /**
- * Created by Isaque Neves Sant Ana. 
- * Version: 1.0.0
+ * Created by Isaque Neves Sant Ana.
+ * Version: 1.0.1
  * Date: 17/01/2018
- * Time: 11:44
+ * Time: 11:46
  */
-
 // PAGINATION CONSTANTS STYLES
-ModernDataTable.NONE=10;
-ModernDataTable.CAROULSEL=11;
-ModernDataTable.CUBE=12;
+ModernDataTable.NONE = 10;
+ModernDataTable.CAROULSEL = 11;
+ModernDataTable.CUBE = 12;
 
 function ModernDataTable(tableId)
 {
-    //this.customLoading = new CustomLoading('loading');
     this._restClient = new RESTClient();
     this._tableSelectorName = removeSpecialChars(tableId);
     this._tableSelector = $('#' + this._tableSelectorName);
@@ -22,6 +20,7 @@ function ModernDataTable(tableId)
     this._webServiceURL = null;
     this._dataToSender = null;
     this._defaultOrderCol = 0;
+    this._enableOrdering = true;
     this._showInfo = false;
     this._serverSide = true;
     this._showSearchBox = true;
@@ -71,9 +70,10 @@ function ModernDataTable(tableId)
     this._data = {"data": []};
     //variavel que armazena a estrutura da tabela
     this._tableStruture = '';
-   
+
     this.init();
 }
+
 //PUBLIC METHODS
 ModernDataTable.prototype.load = function () {
     var self = this;
@@ -87,6 +87,7 @@ ModernDataTable.prototype.reload = function () {
     if (self._serverSide && self._webServiceURL !== null)
     {
         self.getDataFromURL();
+        self.addOrderingClass();
     }
 };
 ModernDataTable.prototype.appendRowFromJSON = function (rowJSONData) {
@@ -301,6 +302,23 @@ ModernDataTable.prototype.init = function () {
     self.drawTableHeader();
     self.createTableHead();
     self.events();
+    //adiciona a class de icone de ordenação caso a ordenação esteja abilitada
+    self.addOrderingClass();
+};
+//adiciona a class de icone de ordenação caso a ordenação esteja abilitada
+ModernDataTable.prototype.addOrderingClass = function () {
+    var self = this;
+    if (self._enableOrdering)
+    {
+        self._tableSelector.find('thead tr th').not('.dataTableColSelect').each(function () {
+            $(this).removeClass('dataTableSortingDesc dataTableSortingAsc').addClass('dataTableSortingDesc');
+        })
+    }
+};
+ModernDataTable.prototype.removeOrderingClass = function (tdJquery) {
+    var self = this;
+    tdJquery.removeClass('dataTableSortingDesc dataTableSortingAsc');
+
 };
 //obtem os dados do webservice
 ModernDataTable.prototype.getDataFromURL = function () {
@@ -308,9 +326,9 @@ ModernDataTable.prototype.getDataFromURL = function () {
     self.showLoading();
     var senderData = {};
 
-    var currentPage = self._currentPage === 1 ? 0 : self._currentPage-1;
+    var currentPage = self._currentPage === 1 ? 0 : self._currentPage - 1;
     var offset = currentPage * self._itemsPerPage;
-    var parametersToSender = {"draw": 1, "start": offset, "length": self._itemsPerPage, "search":self._searchValue};
+    var parametersToSender = {"draw": 1, "start": offset, "length": self._itemsPerPage, "search": self._searchValue};
 
     if (self._dataToSender)
     {
@@ -356,6 +374,7 @@ ModernDataTable.prototype.getData = function () {
     return this._data['data'];
 };
 
+//defini o número maximo de linhas do datatable
 ModernDataTable.prototype.setRecordsPerPage = function (itemsPerPage) {
     this._itemsPerPage = itemsPerPage;
 };
@@ -366,11 +385,21 @@ ModernDataTable.prototype.setSearchValue = function (searchValue) {
     this._searchValue = searchValue;
 };
 
+ModernDataTable.prototype.setDefaultOrderCol = function (defaultOrderCol) {
+    this._defaultOrderCol = defaultOrderCol;
+};
+ModernDataTable.prototype.enableOrdering = function () {
+    this._enableOrdering = true;
+};
+ModernDataTable.prototype.disableOrdering = function () {
+    this._enableOrdering = false;
+};
+
 ModernDataTable.prototype.showLoading = function () {
-    this._tableSelector.parent().addClass('modernDataTableLoading')
+    this._tableSelector.parent().append('<div class="modernDataTableLoading">Carregando...<i></i></div>')
 };
 ModernDataTable.prototype.hideLoading = function () {
-    this._tableSelector.parent().removeClass('modernDataTableLoading')
+    $('.modernDataTableLoading').remove();
 };
 ModernDataTable.prototype.createTableHead = function () {
     var self = this;
@@ -383,13 +412,7 @@ ModernDataTable.prototype.createTableHead = function () {
     if (self._showCheckBoxToSelectRow)
     {
         var checkboxSelectAllId = self._tableSelectorName + '_cbSelectAll';
-        var checkboxSelectAll = '<th class="dataTableColSelect">'
-            + '<div class="dataTableCheckBox">'
-            + '<input id="' + checkboxSelectAllId
-            + '" value="1" type="checkbox">'
-            + '<label for="' + checkboxSelectAllId
-            + '"></label>' + '</div>'
-            + '</th>';
+        var checkboxSelectAll = '<th class="dataTableColSelect">' + '<div class="dataTableCheckBox">' + '<input id="' + checkboxSelectAllId + '" value="1" type="checkbox">' + '<label for="' + checkboxSelectAllId + '"></label>' + '</div>' + '</th>';
         self._tableSelector.find('thead tr').prepend(checkboxSelectAll);
     }
 };
@@ -440,10 +463,7 @@ ModernDataTable.prototype.createCol = function (colContent, columnIdentity, cssC
 ModernDataTable.prototype.createColSelect = function (id) {
     var self = this;
 
-    var colContent =
-        '<div class="dataTableCheckBox">' +
-        '<input value="0" type="checkbox" id="' + id + '"/>'
-        + '<label for="' + id + '"></label></div>';
+    var colContent = '<div class="dataTableCheckBox">' + '<input value="0" type="checkbox" id="' + id + '"/>' + '<label for="' + id + '"></label></div>';
 
     return '<td class="dataTableColSelect">' + colContent + '</td>'
 };
@@ -507,11 +527,11 @@ ModernDataTable.prototype.draw = function () {
             {
                 switch (tdType)
                 {
-                    case 'data':
+                    case 'date':
                         tdContent = sqlDateToBrasilDate(tdContent);
                         break;
 
-                    case 'checkbox':
+                    case 'boolSwitch':
                         var isDisable = tdFlag === 'disabled' ? 'disabled' : '';
                         var jSwitchNoCheck = '<div class="jSwitch"><label><input type="checkbox" ' + isDisable + '><span class="jThumb"></span></label></div>';
                         var jSwitchCheck = '<div class="jSwitch"><label><input type="checkbox" checked ' + isDisable + '><span class="jThumb"></span></label></div>';
@@ -520,7 +540,7 @@ ModernDataTable.prototype.draw = function () {
                         isTdEditable = false;
                         break;
 
-                    case 'bool':
+                    case 'boolText':
                         tdContent = tdContent ? 'Sim' : 'Não';
                         tdClassName = 'dataTableTdBool';
                         isTdEditable = false;
@@ -530,7 +550,23 @@ ModernDataTable.prototype.draw = function () {
                         var boolIconNo = '<i class="dataTableBoolIconNo"></i>';
                         var boolIcon = '<i class="dataTableBoolIconYes"></i>';
                         tdClassName = 'dataTableTdBool';
-                        tdContent = tdContent ? boolIcon + '<span>sim</span>' : boolIconNo + '<span>não</span>';
+                        tdContent = tdContent ? boolIcon : boolIconNo;
+                        isTdEditable = false;
+                        break;
+
+                    case 'boolIconText':
+                        var boolIconTextNo = '<i class="dataTableBoolIconNo"></i>';
+                        var boolIconText = '<i class="dataTableBoolIconYes"></i>';
+                        tdClassName = 'dataTableTdBool';
+                        tdContent = tdContent ? boolIconText + '<span>Sim</span>' : boolIconTextNo + '<span>Não</span>';
+                        isTdEditable = false;
+                        break;
+
+                    case 'boolLabel':
+                        var boolLabelNo = '<span class="dataTableBoolLabelNo">INATIVO</span>';
+                        var boolLabel = '<span class="dataTableBoolLabelYes">ATIVO</span>';
+                        tdClassName = 'dataTableTdBool';
+                        tdContent = tdContent ? boolLabel : boolLabelNo;
                         isTdEditable = false;
                         break;
 
@@ -674,8 +710,8 @@ ModernDataTable.prototype.events = function () {
     $(document).on('click', '#' + self._tableSelectorName + '_next', function (e) {
         self.nextPage();
     });
-    $(document).on('click', '#' +self._tableSelectorName + '_paginate .dataTableBtnPagination', function(){
-        self._currentPage = parseInt( $(this).text() );
+    $(document).on('click', '#' + self._tableSelectorName + '_paginate .dataTableBtnPagination', function () {
+        self._currentPage = parseInt($(this).text());
         self.changePage(self._currentPage);
     });
 
@@ -726,7 +762,42 @@ ModernDataTable.prototype.events = function () {
         self.getDataFromURL();
     });
 
-    //dataTableInputSearch
+    //codigo de ordenação
+    self._tableSelector.off('click', 'thead tr th');
+    self._tableSelector.on('click', 'thead tr th', function (e) {
+        var td = e.target || e.srcElement;
+        var tdJquery = $(td);
+        if (tdJquery.is("th"))
+        {
+            if (!tdJquery.hasClass('dataTableColSelect'))
+            {
+                var colKey = self._columnsToDisplay[td.cellIndex]['key'];
+
+                if (colKey.indexOf('.') === -1)
+                {
+                    var or = '';
+
+                    if (tdJquery.hasClass('dataTableSortingDesc'))
+                    {
+                        or = '';
+                        self.addOrderingClass();
+                        self.removeOrderingClass(tdJquery);
+                        tdJquery.addClass('dataTableSortingAsc');
+                    }
+                    else
+                    {
+                        or = '-';
+                        self.addOrderingClass();
+                        self.removeOrderingClass(tdJquery);
+                        tdJquery.addClass('dataTableSortingDesc');
+                    }
+                    self._data['data'].sort(dynamicSort(or + colKey));
+                    self.draw();
+                }
+            }
+            e.stopPropagation();
+        }
+    });
 };
 //INTERNAL PRIVATE METHODS HELPERS
 ModernDataTable.prototype.getKeyValueFromJSON = function (jsonCols) {
@@ -772,55 +843,65 @@ ModernDataTable.prototype.drawPagination = function () {
     //quantidade total de paginas
     var totalPages = self.numPages();
 
-    var btnQuantity =  self._btnQuantity > totalPages ? totalPages : self._btnQuantity;//quantidade de botões de paginação exibidos
+    var btnQuantity = self._btnQuantity > totalPages ? totalPages : self._btnQuantity;//quantidade de botões de paginação exibidos
 
     var currentPage = self._currentPage;//pagina atual
-    if(btnQuantity === 1){
+    if (btnQuantity === 1)
+    {
         return;
     }
 
     if (self._showPaginate)
     {
-        var prevButton = '<li>'
-            + '<a href="#" id="' + self._tableSelectorName + '_previous">'
-            + '<i class="dataTableBtnPrevious"></i>' + '</a>' + '</li>';
-        if (currentPage===1) prevButton = prevButton.replace('<li>', '<li class="disabled">');
+        var prevButton = '<li>' + '<a href="#" id="' + self._tableSelectorName + '_previous">' + '<i class="dataTableBtnPrevious"></i>' + '</a>' + '</li>';
+        if (currentPage === 1)
+        {
+            prevButton = prevButton.replace('<li>', '<li class="disabled">');
+        }
 
-        var nextButton = '<li>'
-            + '<a href="#" id="'+ self._tableSelectorName + '_next">'
-            + '<i class="dataTableBtnNext"></i>' + '</a>' + '</li>';
-        if (currentPage===totalPages) nextButton = nextButton.replace('<li>', '<li class="disabled">');
+        var nextButton = '<li>' + '<a href="#" id="' + self._tableSelectorName + '_next">' + '<i class="dataTableBtnNext"></i>' + '</a>' + '</li>';
+        if (currentPage === totalPages)
+        {
+            nextButton = nextButton.replace('<li>', '<li class="disabled">');
+        }
 
-        self._paginationContainer = $('<div class="dataTablePaginationContainer" id="'+ self._tableSelectorName + '_paginate">'
-            + '<ul class=""></ul></div>');
+        self._paginationContainer = $('<div class="dataTablePaginationContainer" id="' + self._tableSelectorName + '_paginate">' + '<ul class=""></ul></div>');
 
         self._paginationContainer.children('ul').append(prevButton);
 
-        var idx,loopEnd,itemClass = "";
-        switch (self._paginationStyle) {
+        var idx, loopEnd, itemClass = "";
+        switch (self._paginationStyle)
+        {
             case ModernDataTable.CAROULSEL:
-                idx = currentPage - parseInt(btnQuantity/2);
-                if (idx <= 0) idx = 1;
+                idx = currentPage - parseInt(btnQuantity / 2);
+                if (idx <= 0)
+                {
+                    idx = 1;
+                }
                 loopEnd = idx + btnQuantity;
-                if (loopEnd > totalPages) {
-                    loopEnd = totalPages+1;
+                if (loopEnd > totalPages)
+                {
+                    loopEnd = totalPages + 1;
                     idx = loopEnd - btnQuantity;
                 }
-                while (idx < loopEnd) {
-                    itemClass = idx===currentPage ? ' class="active" ' : '';
-                    self._paginationContainer.children('ul').append('<li'+ itemClass +'><a class="dataTableBtnPagination">'+ idx +'</a></li>');
+                while (idx < loopEnd)
+                {
+                    itemClass = idx === currentPage ? ' class="active" ' : '';
+                    self._paginationContainer.children('ul').append('<li' + itemClass + '><a class="dataTableBtnPagination">' + idx + '</a></li>');
                     idx++;
                 }
                 break;
             case ModernDataTable.CUBE:
-                var facePosition = (currentPage%btnQuantity)===0 ? btnQuantity : currentPage%btnQuantity;
-                loopEnd = btnQuantity-facePosition+currentPage;
-                idx = currentPage-facePosition;
-                while (idx < loopEnd) {
+                var facePosition = (currentPage % btnQuantity) === 0 ? btnQuantity : currentPage % btnQuantity;
+                loopEnd = btnQuantity - facePosition + currentPage;
+                idx = currentPage - facePosition;
+                while (idx < loopEnd)
+                {
                     idx++;
-                    if (idx <= totalPages) {
-                        itemClass = idx===currentPage ? ' class="active" ' : '';
-                        self._paginationContainer.children('ul').append('<li'+ itemClass +'><a class="dataTableBtnPagination">'+ idx +'</a></li>');
+                    if (idx <= totalPages)
+                    {
+                        itemClass = idx === currentPage ? ' class="active" ' : '';
+                        self._paginationContainer.children('ul').append('<li' + itemClass + '><a class="dataTableBtnPagination">' + idx + '</a></li>');
                     }
                 }
                 break;
