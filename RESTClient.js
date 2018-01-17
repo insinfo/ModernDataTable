@@ -1,8 +1,4 @@
 /**
- * Created by Isaque on 24/07/2017.
- */
-
-/**
  * Created by Isaque Neves Sant Ana.
  * Version: 1.0.0
  * Date: 17/01/2018
