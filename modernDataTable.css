@@ -1,0 +1,285 @@
+/*BOTÕES DE AÇÕES DO DATATABLE*/
+
+.dataTableHeader{
+    height: 70px;
+    position: relative;
+}
+
+.dataTableSearchField input[type=text]{
+    border: none;
+    border-bottom: solid 1px #dddddd;
+    width: 200px;
+    margin-left: 20px;
+}
+
+.dataTableSearchField input[type=text]:hover {
+    border-bottom: solid 1px;
+    border-bottom-color: #ff890d;
+    box-shadow: 0 1px 0 #ff890d;
+}
+
+.dataTableSearchField input[type=text]:focus {
+    border-bottom: solid 1px;
+    border-bottom-color: #0076af;
+    box-shadow: 0 1px 0 #0076af;
+}
+
+.dataTableSearchField {
+    position: absolute;
+    top: 20px;
+    left: 0;
+}
+
+.dataTableSearchField i{
+    display: inline-block;
+    top: 0;
+    left: -15px;
+    position: relative;
+    font-style: normal;
+}
+
+.dataTableSearchField i:after{
+    content: "\e98e";
+    font-family: 'icomoon';
+    font-size: 12px;
+    color: #999999;
+    line-height: 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.dataTableActions{
+    position: absolute;
+    right: 0;
+    top: 20px;
+}
+
+.dataTableActionBtn{
+    color: #333333;
+    display: inline-block;
+    width: 30px;
+    height: 30px;
+    text-align: center;
+    font-size: 18px;
+}
+
+.dataTableActionBtn:hover{
+    background-color: #dddddd;
+    color: #333333;
+    border-radius: 3px;
+}
+
+/*.dataTableBtnUpdate:before{
+    font-family: FontAwesome;
+    font-style: normal;
+    font-size: 0.8em;
+    content:"\f021";
+}*/
+
+/*.dataTableBtnUpdate:before{
+    font-family: "Material Icons";
+    font-style: normal;
+    font-size: 0.8em;
+    content:"0";
+}*/
+
+.dataTableBtnUpdate:before {
+    font-family: Icomoon;
+    font-style: normal;
+    content: "\e9fb";
+    font-size: 19px;
+}
+
+.dataTableBtnSave:before{
+    font-family: FontAwesome;
+    font-style: normal;
+    content:"\f0c7";
+}
+
+.dataTableBtnAdd:before {
+    font-family: Icomoon;
+    font-style: normal;
+    content: "\ea0f";
+}
+
+.dataTableBtnDelete:before {
+    font-family: Icomoon;
+    font-style: normal;
+    content: "\e99f";
+}
+
+.dataTableBtnSearch:before {
+    font-family: Icomoon;
+    font-style: normal;
+    content: "\e98e";
+}
+
+
+/* FIM BOTÕES DE AÇÕES*/
+/**/
+.dataTableTdBool .dataTableBoolIconNo:before {
+    color: #f44336;
+    font-family: Icomoon;
+    font-style: normal;
+    font-size: 20px;
+    content: "\ed6a";
+    display: inline-block ;
+}
+
+.dataTableTdBool .dataTableBoolIconYes:before {
+    color: #4caf50;
+    font-family: Icomoon;
+    font-style: normal;
+    font-size: 20px;
+    content: "\ed6e";
+    display: inline-block ;
+    padding: 0;
+    margin: 0;
+}
+
+.modernDataTable table {
+    width: 100%;
+    color: #333333;
+}
+
+.modernDataTable table thead tr{
+    border-top: solid 1px #dddddd;
+    border-bottom: solid 1px #bbbbbb;
+}
+
+.modernDataTable table thead tr th{
+    padding: 15px 20px;
+}
+
+.modernDataTable table tbody tr{
+    border-top: solid 1px #dddddd;
+}
+
+.modernDataTable table tbody tr td{
+    padding: 15px 20px;
+}
+
+.dataTableFooter{
+    width: 100%;
+    height: 70px;
+}
+
+.dataTablePaginationContainer{
+    display: flex;
+    justify-content: center;
+}
+
+.dataTablePaginationContainer ul{
+    display: flex;
+    list-style: none;
+}
+
+.dataTablePaginationContainer ul li{
+    margin: 0 5px;
+}
+
+.dataTablePaginationContainer ul li a{
+    border-radius: 3px;
+    width: 30px;
+    height: 30px;
+    display: block;
+    text-align: center;
+    color: #0076af;
+}
+
+.dataTablePaginationContainer ul li a i{
+    display: inline-block;
+    position: relative;
+    top:-3px;
+}
+
+.dataTablePaginationContainer ul li .dataTableBtnPagination{
+    background-color: #dddddd;
+    color: #333333;
+    padding: 6px 9px;
+}
+
+.dataTableBtnPrevious:before {
+    font-family: Icomoon;
+    font-style: normal;
+    font-size: 24px;
+    content: "\e9c0";
+}
+
+.dataTableBtnNext:before {
+    font-family: Icomoon;
+    font-style: normal;
+    font-size: 24px;
+    content: "\e9c3";
+}
+
+.dataTablePaginationContainer ul .disabled a{
+    color: #bbbbbb;
+}
+
+.dataTablePaginationContainer ul .active a{
+    color: #ffffff;
+    background-color: #0076af;
+}
+
+
+.dataTableCheckBox{
+    position: relative;
+    top: 9px;
+}
+
+.dataTableCheckBox [type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.dataTableCheckBox [type="checkbox"] + label {
+    position: relative;
+    padding-left: 35px;
+    cursor: pointer;
+    display: inline-block;
+    height: 25px;
+    line-height: 25px;
+    font-size: 1rem;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.dataTableCheckBox [type="checkbox"]:checked + label:before {
+    top: -4px;
+    left: -5px;
+    width: 12px;
+    height: 22px;
+    border-top: 2px solid transparent;
+    border-left: 2px solid transparent;
+    border-right: 2px solid #0076af;
+    border-bottom: 2px solid #0076af;
+    -webkit-transform: rotate(40deg);
+    transform: rotate(40deg);
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    -webkit-transform-origin: 100% 100%;
+    transform-origin: 100% 100%;
+}
+
+.dataTableCheckBox [type="checkbox"] + label:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 18px;
+    height: 18px;
+    z-index: 0;
+    border: 2px solid #b4b4b4;
+    border-radius: 1px;
+    margin-top: 2px;
+    -webkit-transition: .2s;
+    transition: .2s;
+}
+
+.dataTableColSelect{
+    width: 50px;
+}
